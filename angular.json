@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "market-training"
+    }
+  },
+  "defaultProject": "market-training",
+  "cli": {
+    "analytics": false
+  }
 }
