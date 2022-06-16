@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, mergeMap, tap } from 'rxjs/operators';
+import { Alert } from 'selenium-webdriver';
 import { ProductModel } from 'src/app/shared/models/ProductModel';
 import { AlertService } from 'src/app/shared/services/alert-service/alert.service';
 import { ProductService } from 'src/app/shared/services/product-service/product.service';
@@ -69,6 +70,36 @@ export class MainProductComponent implements OnInit, OnDestroy {
   onClickProduct(product: ProductModel): void {
     this.product = product;
   }
+
+  onUpdateProduct(product: ProductModel): void{
+    this.getObservableUpdate(product).pipe(
+      mergeMap(() => {
+        return this.getProducts();
+      })
+    ).subscribe();
+  }
+
+  getObservableUpdate(product: ProductModel): Observable<ProductModel> {
+    return this.productService.update(product).pipe(
+      tap(() => {
+        this.alertService.show(messageSaveSuccess, titleSaveSuccess);
+      }),
+      catchError( (error: HttpErrorResponse) => {
+        this.alertService.showError(error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+  onDeletProduct(id: number): void{
+    this.productService.delete(id).subscribe((message)=>{  
+    });
+
+    alert("Deleted!!");
+    this.getProducts().subscribe();
+  }
+
 
   ngOnDestroy(): void {
     // killed subcriptions

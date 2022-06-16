@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertServiceInterface } from 'src/app/shared/Interfaces/alert';
 import { ProductModel } from 'src/app/shared/models/ProductModel';
 import { AlertService } from 'src/app/shared/services/alert-service/alert.service';
 import { messageFormInvalid, titleFormInavlid } from '../constant/product-message';
@@ -20,6 +19,8 @@ export class ProductFormComponent implements OnInit {
     }
   };
   @Output() saveEmit = new EventEmitter<ProductModel>();
+  @Output() updateEmit = new EventEmitter<ProductModel>();
+  @Output() deleteEmit = new EventEmitter<number>();
 
   form: FormGroup;
   product: ProductModel;
@@ -53,10 +54,16 @@ export class ProductFormComponent implements OnInit {
 
   onUpdate(): void {
 
+    if (this.form.valid) {
+      this.updateEmit.emit(this.form.getRawValue());
+      this.form.reset();
+    } else {
+      this.alertService.show(messageFormInvalid, titleFormInavlid);
+    }
   }
 
   onDelete(): void {
-
+      this.deleteEmit.emit(this.form.get("productId").value);
   }
 
   newProduct(): void {
